@@ -3,6 +3,10 @@
 
 int main(void) {
 	/* add your own code */
+  int i = 0;
+  for (i = 0; i < 100; i++) {
+    __asm__("nop");
+  }
 	uint32_t rev = 0xaabbccdd;
 	rev = rev_bytes(rev);
 	return my_func(rev);

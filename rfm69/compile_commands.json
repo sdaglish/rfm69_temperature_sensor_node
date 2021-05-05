@@ -1,0 +1,43 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/arm-none-eabi-gcc",
+      "-Og",
+      "-std=c99",
+      "-ggdb3",
+      "-mcpu=cortex-m0plus",
+      "-mthumb",
+      "-msoft-float",
+      "-fno-common",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-Wextra",
+      "-Wshadow",
+      "-Wno-unused-variable",
+      "-Wimplicit-function-declaration",
+      "-Wredundant-decls",
+      "-Wstrict-prototypes",
+      "-Wmissing-prototypes",
+      "-Wall",
+      "-Wundef",
+      "-I.",
+      "-I../my-common-code",
+      "-I.",
+      "-I../libopencm3/include",
+      "-I.",
+      "-I../my-common-code",
+      "-I.",
+      "-I../libopencm3/include",
+      "-DSTM32L0",
+      "-DSTM32L010K4T",
+      "-I../libopencm3/include",
+      "-c",
+      "-o",
+      "bin/main.o",
+      "main.c"
+    ],
+    "directory": "/home/steven/projects/rfm69-ports/stm32l0x/stm32l010/rfm69",
+    "file": "/home/steven/projects/rfm69-ports/stm32l0x/stm32l010/rfm69/main.c",
+    "output": "/home/steven/projects/rfm69-ports/stm32l0x/stm32l010/rfm69/bin/main.o"
+  }
+]

@@ -31,9 +31,9 @@
 # C++ hasn't been actually tested with this..... sorry bout that. ;)
 # Second expansion/secondary not set, add this if you need them.
 
-BUILD_DIR ?= bin
-OPT ?= -Os
-CSTD ?= -std=c99
+BUILD_DIR = bin
+OPT = -Og
+CSTD = -std=c99
 
 # Be silent per default, but 'make V=1' will show all compiler calls.
 # If you're insane, V=99 will print out all sorts of things.
@@ -51,6 +51,7 @@ LD	= $(PREFIX)gcc
 OBJCOPY	= $(PREFIX)objcopy
 OBJDUMP	= $(PREFIX)objdump
 OOCD	?= openocd
+SIZE    = $(PREFIX)size
 
 OPENCM3_INC = $(OPENCM3_DIR)/include
 
@@ -66,7 +67,8 @@ TGT_CPPFLAGS += -MD
 TGT_CPPFLAGS += -Wall -Wundef $(INCLUDES)
 TGT_CPPFLAGS += $(INCLUDES) $(OPENCM3_DEFS)
 
-TGT_CFLAGS += $(OPT) $(CSTD) -ggdb3
+# TGT_CFLAGS += $(OPT) $(CSTD) -ggdb3
+TGT_CFLAGS += $(OPT) $(CSTD) -ggdb3 -g3
 TGT_CFLAGS += $(ARCH_FLAGS)
 TGT_CFLAGS += -fno-common
 TGT_CFLAGS += -ffunction-sections -fdata-sections
@@ -110,7 +112,7 @@ LDLIBS += -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 %: s.%
 %: SCCS/s.%
 
-all: $(PROJECT).elf $(PROJECT).bin
+all: $(PROJECT).elf $(PROJECT).bin $(PROJECT).lss $(PROJECT).list
 flash: $(PROJECT).flash
 
 # error if not using linker script generator
@@ -143,6 +145,7 @@ $(BUILD_DIR)/%.o: %.S
 $(PROJECT).elf: $(OBJS) $(LDSCRIPT) $(LIBDEPS)
 	@printf "  LD\t$@\n"
 	$(Q)$(LD) $(TGT_LDFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $@
+	$(SIZE) $(PROJECT).elf
 
 %.bin: %.elf
 	@printf "  OBJCOPY\t$@\n"
