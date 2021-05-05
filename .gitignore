@@ -1,4 +1,12 @@
 bin/
 *.elf
 *.bin
-generated.*.ld
+*.ld
+*.list
+*.*~
+*.~
+*~
+.cache/
+rfm69/.cache/
+#*#
+#*.*#
