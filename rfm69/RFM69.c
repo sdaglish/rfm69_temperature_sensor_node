@@ -36,7 +36,6 @@ static uint16_t transmitLevelStep;
 // This is done so that this module can be as target agnostic as possbile (though time will tell how well this works)
 void noInterrupts(void);
 void interrupts(void);
-uint8_t SPI_transfer8Bit(uint8_t tx); 
 
 //void noInterrupts() {
 //  HAL_NVIC_DisableIRQ(EXTI4_15_IRQn);
