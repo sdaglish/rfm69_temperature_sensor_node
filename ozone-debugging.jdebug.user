@@ -1,7 +1,7 @@
 
 
 Breakpoint=main.c:122, State=BP_STATE_DISABLED
-OpenDocument="main.c", FilePath="/home/steven/projects/rfm69-ports/stm32l0x/stm32l010/rfm69/main.c", Line=221
+OpenDocument="main.c", FilePath="/home/steven/projects/rfm69-ports/stm32l0x/stm32l010/rfm69/main.c", Line=185
 OpenDocument="vector.c", FilePath="/home/steven/projects/delete/test1/libopencm3/lib/cm3/vector.c", Line=32
 OpenDocument="exti_common_all.c", FilePath="/home/steven/projects/delete/test1/libopencm3/lib/stm32/common/exti_common_all.c", Line=87
 OpenDocument="i2c_common_v2.c", FilePath="/home/steven/projects/delete/test1/libopencm3/lib/stm32/common/i2c_common_v2.c", Line=277
@@ -11,9 +11,9 @@ OpenDocument="spi_common_all.c", FilePath="/home/steven/projects/delete/test1/li
 OpenDocument="nvic.c", FilePath="/home/steven/projects/delete/test1/libopencm3/lib/cm3/nvic.c", Line=123
 OpenDocument="gpio_common_f0234.c", FilePath="/home/steven/projects/delete/test1/libopencm3/lib/stm32/common/gpio_common_f0234.c", Line=79
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=0, w=463, h=1062, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[CPU], RefreshRate=1
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=0, w=463, h=1045, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[CPU], RefreshRate=1
 OpenWindow="Memory 1", DockArea=BOTTOM, x=1, y=0, w=533, h=321, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x4001300C
-OpenWindow="Watched Data 1", DockArea=RIGHT, x=0, y=1, w=463, h=428, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=RIGHT, x=0, y=1, w=463, h=445, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=195, h=1491, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=546, h=321, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[595;100;100;100;189]
