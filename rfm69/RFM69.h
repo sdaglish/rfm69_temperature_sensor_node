@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "RFM69registers.h"
+#include "timer.h"
 
 
 // available frequency bands

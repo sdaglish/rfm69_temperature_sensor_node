@@ -7,6 +7,7 @@ CFILES += RFM69.c
 CFILES += gpio.c
 CFILES += spi.c
 CFILES += mcp9808.c
+CFILES += timer.c
 #CFILES += api.c
 #AFILES += api-asm.S
 

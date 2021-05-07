@@ -1,5 +1,6 @@
 
 #include "RFM69.h"
+#include "timer.h"
 
 static uint8_t mode;
 static bool isRFM69HW = false;
@@ -460,9 +461,9 @@ void sendFrame(uint16_t toAddress, const void *buffer, uint8_t bufferSize,
 void send(uint16_t toAddress, const void* buffer, uint8_t bufferSize, bool requestACK)
 {
   writeReg(REG_PACKETCONFIG2, (readReg(REG_PACKETCONFIG2) & 0xFB) | RF_PACKET2_RXRESTART); // avoid RX deadlocks
-  uint32_t now = HAL_GetTick();
+  uint32_t now = timer_get_sys_tick();
   //while (!canSend()) receiveDone();
-  while (!canSend() && HAL_GetTick() - now < RF69_CSMA_LIMIT_MS) receiveDone();
+  while (!canSend() && timer_get_sys_tick() - now < RF69_CSMA_LIMIT_MS) receiveDone();
   // TODO: Start again from implementing the below.
   sendFrame(toAddress, buffer, bufferSize, requestACK, false, false, 0);
 }
@@ -482,8 +483,8 @@ bool rfm69_sendWithRetry(uint16_t toAddress, const void *buffer,
   uint32_t sentTime;
   for (uint8_t i = 0; i <= retries; i++) {
     send(toAddress, buffer, bufferSize, true);
-    sentTime = HAL_GetTick();
-    while ((HAL_GetTick() - sentTime) < (retryWaitTime*100)) {
+    sentTime = timer_get_sys_tick();
+    while ((timer_get_sys_tick() - sentTime) < retryWaitTime) {
       //  while(1) {
       if (ACKReceived(toAddress)) {
 	return true;

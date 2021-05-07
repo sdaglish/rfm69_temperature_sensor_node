@@ -4,28 +4,25 @@
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/cm3/nvic.h>
-#include <libopencm3/cm3/systick.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/exti.h>
 #include <libopencm3/stm32/i2c.h>
-#include <libopencm3/stm32/syscfg.h>
+#include "libopencm3/stm32/l0/syscfg.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-#include "libopencm3/stm32/l0/syscfg.h"
 #include "spi.h"
 #include "gpio.h"
 #include "RFM69.h"
 #include "mcp9808.h"
+#include "timer.h"
 
 #define NODEID    10
 #define NETWORKID 10
 #define GATEWAYID 11
 #define FREQUENCY RF69_433MHZ
-
-static volatile uint32_t sys_tick_timer = 0;
 
 extern uint8_t SPI_transfer8Bit(uint8_t tx) {
   return spi_xfer(SPI1, tx);
@@ -33,28 +30,13 @@ extern uint8_t SPI_transfer8Bit(uint8_t tx) {
 
 extern uint8_t spi_transfer(uint8_t tx) { return spi_xfer(SPI1, tx); }
 
-extern uint32_t HAL_GetTick(void) {
-  return sys_tick_timer;
-}
 
 extern void noInterrupts(void) {
    nvic_disable_irq(NVIC_EXTI2_3_IRQ);
-  // exti_disable_request(EXTI3);
 }
 
 extern void interrupts(void) {
-  //gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO3);
-  //SYSCFG->EXTICR[0] &= (uint16_t)~SYSCFG_EXTICR1_EXTI0_PA; /* (3) */
-  //SYSCFG_EXTICR(0) &= 0b1111; 
-
-  // exti_select_source(EXTI3, GPIOA);
-  //exti_set_trigger(EXTI3, EXTI_TRIGGER_RISING);
-  //exti_enable_request(EXTI3);
-
-  //nvic_clear_pending_irq(NVIC_EXTI2_3_IRQ);
-
   nvic_enable_irq(NVIC_EXTI2_3_IRQ);
-  //nvic_set_priority(NVIC_EXTI2_3_IRQ, 2);
 }
 
 extern void RFM69_setCSPin(bool state) {
@@ -67,9 +49,6 @@ extern void RFM69_setCSPin(bool state) {
 }
 
 
-void sys_tick_handler() {
-  sys_tick_timer++;
-}
 
 static void clock_setup(void) {
   rcc_set_hpre(RCC_CFGR_HPRE_NODIV);
@@ -80,22 +59,12 @@ static void clock_setup(void) {
   // rcc_periph_clock_enable(RCC_GPIOB);
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_SYSCFG);
-  
-
-  // Systick
-  systick_set_clocksource(STK_CSR_CLKSOURCE_AHB); // 2.097MHz (?)
-  systick_set_reload((2097*1)-1); // 2.097MHz / 2097 = 1000 overflows per second - every 1ms one interrupt.
-  systick_clear();
-  systick_interrupt_enable();
-  systick_counter_enable();
 
   // SPI
   rcc_periph_clock_enable(RCC_SPI1);
 
   // I2C
   rcc_periph_clock_enable(RCC_I2C1);
-
-  
 }
 
 static void spi_setup(void) {
@@ -120,7 +89,7 @@ static void gpio_setup(void) {
   nvic_enable_irq(NVIC_EXTI2_3_IRQ);
   exti_select_source(EXTI3, GPIOA);
   exti_set_trigger(EXTI3, EXTI_TRIGGER_RISING);
-   exti_enable_request(EXTI3);
+  exti_enable_request(EXTI3);
   //exti_disable_request(EXTI3);
   nvic_clear_pending_irq(NVIC_EXTI2_3_IRQ);
   nvic_set_priority(NVIC_EXTI2_3_IRQ, 2);
@@ -139,8 +108,6 @@ static void i2c_setup(void) {
 
   i2c_reset(I2C1);
   i2c_peripheral_disable(I2C1);
-
-
   
   i2c_set_speed(I2C1, i2c_speed_sm_100k, 2);  // Actually 2.097MHz, that that doesn't seem to be an option
   i2c_enable_stretching(I2C1);
@@ -273,6 +240,7 @@ static void ftoa(float Value, char *Buffer) {
 
 int main(void) {
   clock_setup();
+  timer_setup();
   spi_setup();
   gpio_setup();
   i2c_setup();
@@ -307,8 +275,8 @@ int main(void) {
     payload[sendSize - 1] = '\0';
     rfm69_sendWithRetry(GATEWAYID, payload, sendSize, 20, 200);
 
-    uint32_t now = sys_tick_timer;
-    while ((sys_tick_timer - now) < 5000) {
+    uint32_t now = timer_get_sys_tick();
+    while ((timer_get_sys_tick() - now) < 1000) {
     }
   }
 }
