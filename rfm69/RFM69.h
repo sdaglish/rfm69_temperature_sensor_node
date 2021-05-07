@@ -48,9 +48,6 @@ void rfm69_setPowerLevel(uint8_t powerLevel_param);
 uint8_t RFM69_getPowerLevel(void);
 void RFM69_enableAutoPower(int16_t targetRSSI_param);
 void RFM69_setPowerLevel(uint8_t powerLevel_param);
-// extern functions
-// This is done so that this module can be as target agnostic as possbile (though time will tell how well this works)
-extern void noInterrupts(void);
-extern void interrupts(void);
+
 
 #endif

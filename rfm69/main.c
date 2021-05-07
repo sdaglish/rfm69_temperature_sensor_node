@@ -19,13 +19,7 @@
 #define GATEWAYID 11
 #define FREQUENCY RF69_433MHZ
 
-extern void noInterrupts(void) {
-   nvic_disable_irq(NVIC_EXTI2_3_IRQ);
-}
 
-extern void interrupts(void) {
-  nvic_enable_irq(NVIC_EXTI2_3_IRQ);
-}
 
 static void clock_setup(void) {
   rcc_set_hpre(RCC_CFGR_HPRE_NODIV);

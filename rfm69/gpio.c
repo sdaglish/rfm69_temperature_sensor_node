@@ -25,3 +25,10 @@ void RFM69_setCSPin(bool state) {
   }
 }
 
+void noInterrupts(void) {
+   nvic_disable_irq(NVIC_EXTI2_3_IRQ);
+}
+
+void interrupts(void) {
+  nvic_enable_irq(NVIC_EXTI2_3_IRQ);
+}

@@ -32,18 +32,7 @@ static uint16_t transmitLevelStep;
 
 #define abs(x) (((x) > 0) ? (x) : -(x))
 
-// extern functions
-// This is done so that this module can be as target agnostic as possbile (though time will tell how well this works)
-void noInterrupts(void);
-void interrupts(void);
-
-//void noInterrupts() {
-//  HAL_NVIC_DisableIRQ(EXTI4_15_IRQn);
-//}
-//void interrupts() {
-//  HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
-//}
-static void select() {
+static void select(void) {
   noInterrupts();
   //  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
   RFM69_setCSPin(false);
@@ -145,7 +134,7 @@ static void setMode(uint8_t newMode) {
 }
 
 // get the received signal strength indicator (RSSI)
-int16_t readRSSI(bool forceTrigger) {
+static int16_t readRSSI(bool forceTrigger) {
   int16_t rssi = 0;
   if (forceTrigger)
   {
@@ -285,7 +274,7 @@ bool rfm69_init(uint8_t freqBand_param, uint8_t nodeID, uint8_t networkID_param)
 }
 
 
-bool canSend(void)
+static bool canSend(void)
 {
   if (mode == RF69_MODE_RX && PAYLOADLEN == 0 && readRSSI(false) < CSMA_LIMIT) // if signal stronger than -100dBm is detected assume channel activity
   {
@@ -296,7 +285,7 @@ bool canSend(void)
 }
 
 // internal function
-void receiveBegin() {
+static void receiveBegin(void) {
   ACK_RSSI_REQUESTED = 0;
   DATALEN = 0;
   SENDERID = 0;
@@ -314,7 +303,7 @@ void receiveBegin() {
   setMode(RF69_MODE_RX);
 }
 
-void interruptHook(uint8_t CTLbyte) {
+static void interruptHook(uint8_t CTLbyte) {
   ACK_RSSI_REQUESTED = CTLbyte & RFM69_CTL_RESERVE1; // TomWS1: extract the ACK RSSI request bit (could potentially merge with ACK_REQUESTED)
   // TomWS1: now see if this was an ACK with an ACK_RSSI response
   if (ACK_RECEIVED){// && ACK_RSSI_REQUESTED) {
@@ -380,7 +369,7 @@ void interruptHandler() {
 }
 
 // checks if a packet was received and/or puts transceiver in receive (ie RX or listen) mode
-bool receiveDone() {
+static bool receiveDone(void) {
   if (haveData)
     {
       haveData = false;
@@ -401,7 +390,7 @@ bool receiveDone() {
 }
 
 // Updated for ATC
-void sendFrame(uint16_t toAddress, const void *buffer, uint8_t bufferSize,
+static void sendFrame(uint16_t toAddress, const void *buffer, uint8_t bufferSize,
                bool requestACK, bool sendACK, bool sendRSSI, int16_t lastRSSI) {
 
   setMode(RF69_MODE_STANDBY);
@@ -456,7 +445,7 @@ void sendFrame(uint16_t toAddress, const void *buffer, uint8_t bufferSize,
   setMode(RF69_MODE_STANDBY);
 }
 
-void send(uint16_t toAddress, const void* buffer, uint8_t bufferSize, bool requestACK)
+static void send(uint16_t toAddress, const void* buffer, uint8_t bufferSize, bool requestACK)
 {
   writeReg(REG_PACKETCONFIG2, (readReg(REG_PACKETCONFIG2) & 0xFB) | RF_PACKET2_RXRESTART); // avoid RX deadlocks
   uint32_t now = timer_get_sys_tick();
@@ -467,7 +456,7 @@ void send(uint16_t toAddress, const void* buffer, uint8_t bufferSize, bool reque
 }
 
 // should be polled immediately after sending a packet with ACK request
-bool ACKReceived(uint16_t fromNodeID) {
+static bool ACKReceived(uint16_t fromNodeID) {
   if (receiveDone())
     return (SENDERID == fromNodeID || fromNodeID == RF69_BROADCAST_ADDR) && ACK_RECEIVED;
   return false;
@@ -592,6 +581,6 @@ void RFM69_enableAutoPower(int16_t targetRSSI_param) {
 //=============================================================================
 // getAckRSSI() - returns the RSSI value ack'd by the far end.
 //=============================================================================
-int16_t  getAckRSSI(void){                     // TomWS1: New method to retrieve the ack'd RSSI (if any)
+static int16_t  getAckRSSI(void){                     // TomWS1: New method to retrieve the ack'd RSSI (if any)
   return (targetRSSI==0?0:ackRSSI);
 }

@@ -13,5 +13,7 @@
 
 void gpio_setup(void);
 void RFM69_setCSPin(bool state);
+void noInterrupts(void);
+void interrupts(void);
 
 #endif
