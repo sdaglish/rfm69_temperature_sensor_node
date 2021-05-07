@@ -501,17 +501,12 @@ static void listenModeReset(void)
 
 
 void rfm69_listenModeInterruptHandler(void) {
-     interruptHandler();
-  return; 
-  haveData = true;
-  return;
-  
   if (DATALEN != 0) {
     return;
   }
   
   listenModeReset();
-  // TODO: Implement this feature, which I think is an Ardino thing noInterrupts();
+  noInterrupts();
   select();
 
   union // union to simplify addressing of long and short parts of time offset
