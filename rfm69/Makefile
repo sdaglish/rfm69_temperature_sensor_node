@@ -8,6 +8,7 @@ CFILES += gpio.c
 CFILES += spi.c
 CFILES += mcp9808.c
 CFILES += timer.c
+CFILES += i2c.c
 #CFILES += api.c
 #AFILES += api-asm.S
 

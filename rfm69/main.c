@@ -1,32 +1,30 @@
 #include "libopencm3/stm32/l0/rcc.h"
-#include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/flash.h>
-#include <libopencm3/stm32/i2c.h>
 #include "libopencm3/stm32/l0/syscfg.h"
+#include <libopencm3/stm32/flash.h>
+#include <libopencm3/stm32/rcc.h>
 
-#include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "spi.h"
-#include "gpio.h"
 #include "RFM69.h"
+#include "gpio.h"
+#include "i2c.h"
 #include "mcp9808.h"
+#include "spi.h"
 #include "timer.h"
 
-#define NODEID    10
+#define NODEID 10
 #define NETWORKID 10
 #define GATEWAYID 11
 #define FREQUENCY RF69_433MHZ
-
-
 
 static void clock_setup(void) {
   rcc_set_hpre(RCC_CFGR_HPRE_NODIV);
   rcc_set_ppre1(RCC_CFGR_PPRE1_NODIV);
   rcc_set_ppre2(RCC_CFGR_PPRE2_NODIV);
-  
-  // GPIO 
+
+  // GPIO
   // rcc_periph_clock_enable(RCC_GPIOB);
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_SYSCFG);
@@ -36,24 +34,6 @@ static void clock_setup(void) {
 
   // I2C
   rcc_periph_clock_enable(RCC_I2C1);
-}
-
-
-
-
-static void i2c_setup(void) {
-  i2c_reset(I2C1);
-  gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10);
-  gpio_set_output_options(GPIOA, GPIO_OTYPE_OD, GPIO_OSPEED_HIGH, GPIO9 | GPIO10);
-  gpio_set_af(GPIOA, GPIO_AF1, GPIO9 | GPIO10);
-
-  i2c_reset(I2C1);
-  i2c_peripheral_disable(I2C1);
-  
-  i2c_set_speed(I2C1, i2c_speed_sm_100k, 2);  // Actually 2.097MHz, that that doesn't seem to be an option
-  i2c_enable_stretching(I2C1);
-  i2c_set_7bit_addr_mode(I2C1);
-  i2c_peripheral_enable(I2C1);
 }
 
 static char *itoa(int value, char *result, int base) {
@@ -214,14 +194,14 @@ int main(void) {
   spi_setup();
   gpio_setup();
   i2c_setup();
-  
+
   rfm69_init(RF69_433MHZ, NODEID, NETWORKID);
   RFM69_enableAutoPower(-80);
 
   mcp9808_init();
 
   char payload[16];
-  uint8_t sendSize = 0;//strlen(payload);
+  uint8_t sendSize = 0; // strlen(payload);
 
   while (1) {
     uint16_t tempValue = mcp9808_readTempReg();
@@ -246,7 +226,7 @@ int main(void) {
     rfm69_sendWithRetry(GATEWAYID, payload, sendSize, 20, 200);
 
     uint32_t now = timer_get_sys_tick();
-    while ((timer_get_sys_tick() - now) < 1000) {
+    while ((timer_get_sys_tick() - now) < 30000) {
     }
   }
 }
