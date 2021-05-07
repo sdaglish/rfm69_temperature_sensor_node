@@ -34,6 +34,7 @@
 BUILD_DIR = bin
 OPT = -Og
 CSTD = -std=c99
+DEBUG = -ggdb3
 
 # Be silent per default, but 'make V=1' will show all compiler calls.
 # If you're insane, V=99 will print out all sorts of things.
@@ -52,6 +53,10 @@ OBJCOPY	= $(PREFIX)objcopy
 OBJDUMP	= $(PREFIX)objdump
 OOCD	?= openocd
 SIZE    = $(PREFIX)size
+GDB	= $(PREFIX)gdb
+
+# Where the Segger jlink can be found
+BMP_PORT = localhost:2331
 
 OPENCM3_INC = $(OPENCM3_DIR)/include
 
@@ -159,18 +164,23 @@ $(PROJECT).elf: $(OBJS) $(LDSCRIPT) $(LIBDEPS)
 
 %.flash: %.elf
 	@printf "  FLASH\t$<\n"
-ifeq (,$(OOCD_FILE))
-	$(Q)(echo "halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
-		$(OOCD) -f interface/$(OOCD_INTERFACE).cfg \
-		-f target/$(OOCD_TARGET).cfg \
-		-c "program $(realpath $(*).elf) verify reset exit" \
-		$(NULL)
-else
-	$(Q)(echo "halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
-		$(OOCD) -f $(OOCD_FILE) \
-		-c "program $(realpath $(*).elf) verify reset exit" \
-		$(NULL)
-endif
+	$(GDB) --batch \
+		-ex 'target remote $(BMP_PORT)' \
+		-x bmp_flash.src \
+		$(*).elf
+
+# ifeq (,$(OOCD_FILE))
+# $(Q)(echo "halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
+# $(OOCD) -f interface/$(OOCD_INTERFACE).cfg \
+# -f target/$(OOCD_TARGET).cfg \
+# -c "program $(realpath $(*).elf) verify reset exit" \
+# $(NULL)
+# else
+# $(Q)(echo "halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
+# $(OOCD) -f $(OOCD_FILE) \
+# -c "program $(realpath $(*).elf) verify reset exit" \
+# $(NULL)
+# endif
 
 clean:
 	rm -rf $(BUILD_DIR) $(GENERATED_BINS)
