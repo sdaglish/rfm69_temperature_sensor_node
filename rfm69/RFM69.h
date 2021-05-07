@@ -8,6 +8,7 @@
 
 #include "RFM69registers.h"
 #include "timer.h"
+#include "gpio.h"
 
 
 // available frequency bands
@@ -50,7 +51,6 @@ void RFM69_setPowerLevel(uint8_t powerLevel_param);
 // This is done so that this module can be as target agnostic as possbile (though time will tell how well this works)
 extern void noInterrupts(void);
 extern void interrupts(void);
-extern void RFM69_setCSPin(bool state);
 extern uint8_t SPI_transfer8Bit(uint8_t tx); 
 
 #endif

@@ -1,17 +1,13 @@
-#include "libopencm3/stm32/l0/nvic.h"
 #include "libopencm3/stm32/l0/rcc.h"
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/flash.h>
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/cm3/nvic.h>
-#include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/spi.h>
-#include <libopencm3/stm32/exti.h>
 #include <libopencm3/stm32/i2c.h>
 #include "libopencm3/stm32/l0/syscfg.h"
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "spi.h"
 #include "gpio.h"
@@ -38,17 +34,6 @@ extern void noInterrupts(void) {
 extern void interrupts(void) {
   nvic_enable_irq(NVIC_EXTI2_3_IRQ);
 }
-
-extern void RFM69_setCSPin(bool state) {
-  if (state == true) {
-    gpio_set(GPIOA, GPIO4);
-  }
-  else {
-    gpio_clear(GPIOA, GPIO4);
-  }
-}
-
-
 
 static void clock_setup(void) {
   rcc_set_hpre(RCC_CFGR_HPRE_NODIV);
@@ -83,22 +68,7 @@ static void spi_setup(void) {
   spi_enable(SPI1);
 }
 
-static void gpio_setup(void) {
-  gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO3);
-  
-  nvic_enable_irq(NVIC_EXTI2_3_IRQ);
-  exti_select_source(EXTI3, GPIOA);
-  exti_set_trigger(EXTI3, EXTI_TRIGGER_RISING);
-  exti_enable_request(EXTI3);
-  //exti_disable_request(EXTI3);
-  nvic_clear_pending_irq(NVIC_EXTI2_3_IRQ);
-  nvic_set_priority(NVIC_EXTI2_3_IRQ, 2);
-}
 
-void exti2_3_isr() {
-  exti_reset_request(EXTI3);
-  isr0();
-}
 
 static void i2c_setup(void) {
   i2c_reset(I2C1);
@@ -113,6 +83,35 @@ static void i2c_setup(void) {
   i2c_enable_stretching(I2C1);
   i2c_set_7bit_addr_mode(I2C1);
   i2c_peripheral_enable(I2C1);
+}
+
+static char *itoa(int value, char *result, int base) {
+  // check that the base if valid
+  if (base < 2 || base > 36) {
+    *result = '\0';
+    return result;
+  }
+
+  char *ptr = result, *ptr1 = result, tmp_char;
+  int tmp_value;
+
+  do {
+    tmp_value = value;
+    value /= base;
+    *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrst"
+	     "uvwxyz"[35 + (tmp_value - value * base)];
+  } while (value);
+
+  // Apply negative sign
+  if (tmp_value < 0)
+    *ptr++ = '-';
+  *ptr-- = '\0';
+  while (ptr1 < ptr) {
+    tmp_char = *ptr;
+    *ptr-- = *ptr1;
+    *ptr1++ = tmp_char;
+  }
+  return result;
 }
 
 static void ftoa(float Value, char *Buffer) {

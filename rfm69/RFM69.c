@@ -36,7 +36,6 @@ static uint16_t transmitLevelStep;
 // This is done so that this module can be as target agnostic as possbile (though time will tell how well this works)
 void noInterrupts(void);
 void interrupts(void);
-void RFM69_setCSPin(bool state);
 uint8_t SPI_transfer8Bit(uint8_t tx); 
 
 //void noInterrupts() {
