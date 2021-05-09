@@ -13,7 +13,7 @@ CFILES += i2c.c
 #AFILES += api-asm.S
 
 # TODO - you will need to edit these two lines!
-DEVICE=stm32l010k4t
+DEVICE=stm32l010f4t
 # OOCD_FILE = board/stm32f4discovery.cfg
 OOCD_TARGET = target/stm32l.cfg
 
