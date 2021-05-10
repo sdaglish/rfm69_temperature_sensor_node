@@ -9,8 +9,7 @@ CFILES += spi.c
 CFILES += mcp9808.c
 CFILES += timer.c
 CFILES += i2c.c
-#CFILES += api.c
-#AFILES += api-asm.S
+CFILES += utils.c
 
 # TODO - you will need to edit these two lines!
 DEVICE=stm32l010f4t
