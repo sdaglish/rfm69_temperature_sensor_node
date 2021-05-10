@@ -16,7 +16,8 @@
 #include "timer.h"
 #include "utils.h"
 
-// TODO: Place these in a seperate header file that will contain all the information about the network.
+// TODO: Place these in a seperate header file that will contain all the
+// information about the network.
 #define NODEID 10
 #define NETWORKID 10
 #define GATEWAYID 11
@@ -27,16 +28,14 @@ static void clock_setup(void) {
      rcc_clock_setup_pll as it doesn't allow use of the MSI
   */
 
-  struct rcc_clock_scale clock = {
-    .pll_mul = RCC_CFGR_PLLMUL_MUL3,
-    .pll_div = RCC_CFGR_PLLDIV_DIV4,
-    .pll_source = RCC_MSI,
-    .voltage_scale = PWR_SCALE1,
-    .hpre = RCC_CFGR_HPRE_NODIV,
-    .ppre1 = RCC_CFGR_PPRE1_NODIV,
-    .ppre2 = RCC_CFGR_PPRE2_NODIV,
-    .msi_range = 5
-  };
+  struct rcc_clock_scale clock = {.pll_mul = RCC_CFGR_PLLMUL_MUL3,
+				  .pll_div = RCC_CFGR_PLLDIV_DIV4,
+				  .pll_source = RCC_MSI,
+				  .voltage_scale = PWR_SCALE1,
+				  .hpre = RCC_CFGR_HPRE_NODIV,
+				  .ppre1 = RCC_CFGR_PPRE1_NODIV,
+				  .ppre2 = RCC_CFGR_PPRE2_NODIV,
+				  .msi_range = 5};
 
   rcc_set_msi_range(clock.msi_range);
   rcc_osc_on(RCC_MSI);
@@ -48,7 +47,8 @@ static void clock_setup(void) {
   pwr_set_vos_scale(clock.voltage_scale);
 
   rcc_osc_off(RCC_PLL);
-  while (rcc_is_osc_ready(RCC_PLL)) {}
+  while (rcc_is_osc_ready(RCC_PLL)) {
+  }
 
   flash_prefetch_enable();
   flash_set_ws(clock.flash_waitstates);
@@ -63,7 +63,8 @@ static void clock_setup(void) {
   rcc_set_sysclk_source(RCC_MSI);
 
   /* Set the peripheral clock frequencies used. */
-  // These currently aren't actually being used and could probably be removed without any issues.
+  // These currently aren't actually being used and could probably be removed
+  // without any issues.
   rcc_ahb_frequency = clock.ahb_frequency;
   rcc_apb1_frequency = clock.apb1_frequency;
   rcc_apb2_frequency = clock.apb2_frequency;
@@ -78,11 +79,9 @@ static void clock_setup(void) {
 
   // I2C
   rcc_set_peripheral_clk_sel(I2C1_BASE, 0b01);
-  //RCC_CCIPR |= (1 << 12);
+  // RCC_CCIPR |= (1 << 12);
   rcc_periph_clock_enable(RCC_I2C1);
-					  }
-
-
+}
 
 int main(void) {
   clock_setup();
